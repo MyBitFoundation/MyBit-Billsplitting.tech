@@ -17,6 +17,7 @@ contract('Billsplitting', async(accounts) => {
   const payer1 = web3.eth.accounts[0];
   const payer2 = web3.eth.accounts[1];
   const payer3 = web3.eth.accounts[2];
+  const payer3New = web3.eth.accounts[3];
   const payers = [payer1, payer2, payer3];
   const receiver = web3.eth.accounts[9];
   const total = 10*WEI;
@@ -169,12 +170,31 @@ contract('Billsplitting', async(accounts) => {
     }
   });
 
+  it('Fail to change address', async() => {
+    try{
+      await billsplitting.changeUserAddress(billID, 0, {from: payer3});
+    } catch(e) {
+      console.log('Cannot change address to empty address');
+    }
+  });
+
+  it('Change user address', async() => {
+    let payer3OwingBefore = BigNumber(await billsplitting.getUserOwing(billID, {from: payer3}));
+    await billsplitting.changeUserAddress(billID, payer3New, {from: payer3});
+    let payer3OwingAfter = BigNumber(await billsplitting.getUserOwing(billID, {from: payer3}));
+    assert.equal(Number(payer3OwingAfter), 0);
+    let payer3NewOwing = BigNumber(await billsplitting.getUserOwing(billID, {from: payer3New}));
+    console.log(payer3OwingBefore);
+    console.log(payer3NewOwing);
+    assert.equal(payer3NewOwing.isEqualTo(payer3OwingBefore), true);
+  });
+
   it('Correct payer3 share', async() => {
-    let payerOwingBefore = BigNumber(await billsplitting.getUserOwing(billID,{from: payer3}));
+    let payerOwingBefore = BigNumber(await billsplitting.getUserOwing(billID,{from: payer3New}));
     console.log(payerOwingBefore);
     console.log(Number(payerOwingBefore));
-    await billsplitting.payShare(billID, {from: payer3, value: Number(payerOwingBefore)});
-    let payerOwingAfter = BigNumber(await billsplitting.getUserOwing(billID,{from: payer3}));
+    await billsplitting.payShare(billID, {from: payer3New, value: Number(payerOwingBefore)});
+    let payerOwingAfter = BigNumber(await billsplitting.getUserOwing(billID,{from: payer3New}));
     assert.equal(payerOwingAfter.isEqualTo(0), true);
   });
 

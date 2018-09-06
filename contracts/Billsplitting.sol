@@ -43,7 +43,8 @@ contract Billsplitting {
       database.setUint(keccak256(abi.encodePacked('billsplittingOwing', id, _payers[i])), payerOwing);
       owingSum = owingSum.add(payerOwing);
     }
-    database.setUint(keccak256(abi.encodePacked('billsplittingOwing', id, _payers[i])), _total.sub(owingSum));
+    database.setAddress(keccak256(abi.encodePacked('billsplittingPayer', id, _payers.length-1)), _payers[_payers.length-1]);
+    database.setUint(keccak256(abi.encodePacked('billsplittingOwing', id, _payers[_payers.length-1])), _total.sub(owingSum));
 
     emit LogNewBill(id, _receiver, _total);
   }
@@ -95,10 +96,13 @@ contract Billsplitting {
     require(_newAddress != address(0));
     uint totalPayers = database.uintStorage(keccak256(abi.encodePacked('billsplittingTotalPayers', _billID)));
     for(uint i=0; i<totalPayers; i++){
+      //emit LogAddress(database.addressStorage(keccak256(abi.encodePacked('billsplittingPayer', _billID, i))));
       if(database.addressStorage(keccak256(abi.encodePacked('billsplittingPayer', _billID, i))) == msg.sender ){
+        emit LogAddressChanged(msg.sender, _newAddress);
         database.setAddress(keccak256(abi.encodePacked('billsplittingPayer', _billID, i)), _newAddress);
-        database.setUint(keccak256(abi.encodePacked('billsplittingOwing', _billID, _newAddress)), database.uintStorage(abi.encodePacked('billsplittingOwing', _billID, msg.sender)) );
-        database.setUint(keccak256(abi.encodePacked('billsplittingOwing', _billID, msg.sender)), 0 );
+        uint owing = database.uintStorage(keccak256(abi.encodePacked('billsplittingOwing', _billID, msg.sender)));
+        database.setUint(keccak256(abi.encodePacked('billsplittingOwing', _billID, _newAddress)), owing);
+        database.setUint(keccak256(abi.encodePacked('billsplittingOwing', _billID, msg.sender)), 0);
       }
     }
   }
@@ -108,4 +112,6 @@ contract Billsplitting {
   //function cancelBill()
 
   event LogNewBill(bytes32 _billID, address _receiver, uint _total);
+  event LogAddressChanged(address _oldAddress, address _newAddress);
+  event LogAddress(address _address);
 }
