@@ -93,7 +93,7 @@ contract Billsplitting {
   function changeUserAddress(bytes32 _billID, address _newAddress)
   external{
     require(_newAddress != address(0));
-    totalPayers = database.uintStorage(keccak256(abi.encodePacked('billsplittingTotalPayers', _billID)));
+    uint totalPayers = database.uintStorage(keccak256(abi.encodePacked('billsplittingTotalPayers', _billID)));
     for(uint i=0; i<totalPayers; i++){
       if(database.addressStorage(keccak256(abi.encodePacked('billsplittingPayer', _billID, i))) == msg.sender ){
         database.setAddress(keccak256(abi.encodePacked('billsplittingPayer', _billID, i)), _newAddress);
