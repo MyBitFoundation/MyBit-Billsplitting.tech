@@ -90,9 +90,21 @@ contract Billsplitting {
   }
 
   //function createBill() external{}
-  //function changeUserAddress()
+  function changeUserAddress(bytes32 _billID, address _newAddress)
+  external{
+    require(_newAddress != address(0));
+    totalPayers = database.uintStorage(keccak256(abi.encodePacked('billsplittingTotalPayers', id)));
+    for(uint i=0; i<totalPayers; i++){
+      if(database.addressStorage(keccak256(abi.encodePacked('billsplittingPayer', _billID, i))) == msg.sender ){
+        database.setAddress(keccak256(abi.encodePacked('billsplittingPayer', _billID, i)), _newAddress);
+        database.setUint(keccak256(abi.encodePacked('billsplittingOwing', _billID, _newAddress)), database.uintStorage(abi.encodePacked('billsplittingOwing', _billID, msg.sender)) );
+        database.setUint(keccak256(abi.encodePacked('billsplittingOwing', _billID, msg.sender)), 0 );
+      }
+    }
+  }
   //function changeReceiver()
   //function getUsersOwing()
+
   //function cancelBill()
 
   event LogNewBill(bytes32 _billID, address _receiver, uint _total);
