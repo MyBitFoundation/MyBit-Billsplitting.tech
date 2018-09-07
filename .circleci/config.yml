@@ -16,4 +16,4 @@ jobs:
 
 notify:
   webhooks:
-    - url: https://coveralls.io/webhook?repo_token=$BILLSPLITTING_REPO_TOKEN
+    - url: https://coveralls.io/webhook?repo_token=$BILL_REPO_TOKEN
