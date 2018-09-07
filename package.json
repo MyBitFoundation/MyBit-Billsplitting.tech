@@ -4,6 +4,7 @@
   "description": "Split a bill amongst several accounts",
   "main": "truffle.js",
   "directories": {
+    "doc": "docs",
     "test": "test"
   },
   "scripts": {
