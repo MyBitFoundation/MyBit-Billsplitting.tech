@@ -1,10 +1,9 @@
 # Ethereum Bill-Splitting
 [![CircleCI](https://circleci.com/gh/MyBitFoundation/MyBit-BillSplitting.tech.svg?style=shield)](https://circleci.com/gh/MyBitFoundation/MyBit-BillSplitting.tech) [![Coverage Status](https://coveralls.io/repos/github/MyBitFoundation/MyBit-BillSplitting.tech/badge.svg?branch=feature%2Fcoverage)](https://coveralls.io/github/MyBitFoundation/MyBit-BillSplitting.tech?branch=feature%2Fcoverage)
 
-:money_with_wings: The Bill-Splitting Dapp allows users to send ETH to a contract, which will be sent to a designated recipient once enough ETH has been sent. 
+:money_with_wings: Bill-Splitting Dapp powered by the MyBit Platform™
 
-
-### Documentation 
+This dapp allows many users crowdfund a bill, which will be sent to the designated party once it receives enough Ether. 
 
 
 ## Setup
