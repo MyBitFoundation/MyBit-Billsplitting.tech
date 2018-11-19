@@ -26,6 +26,7 @@ contract Billsplitting {
 
   function createBillEqual(address _receiver, uint _total, address[] _payers)
   external {
+    require(_payers.length <= 50);
     require(mybBurner.burn(msg.sender, mybFee));
     uint owingSum = 0;
     uint payerOwing = _total.div(_payers.length);
