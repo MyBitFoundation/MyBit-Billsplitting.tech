@@ -1,4 +1,4 @@
-var BigNumber = require('bignumber.js');
+const bn = require('bignumber.js');
 
 const Billsplitting = artifacts.require("./Billsplitting.sol");
 const Token = artifacts.require('./ERC20.sol');
@@ -48,9 +48,9 @@ contract('Billsplitting', async(accounts) => {
       assert.equal(userBalance, tokenPerAccount);
     }
     // Check token ledger is correct
-    const totalTokensCirculating = BigNumber(web3.eth.accounts.length - 1).times(tokenPerAccount);
-    const remainingTokens = BigNumber(tokenSupply).minus(totalTokensCirculating);
-    assert.equal(BigNumber(await token.balanceOf(payer1)).eq(remainingTokens), true);
+    const totalTokensCirculating = bn(web3.eth.accounts.length - 1).times(tokenPerAccount);
+    const remainingTokens = bn(tokenSupply).minus(totalTokensCirculating);
+    assert.equal(bn(await token.balanceOf(payer1)).eq(remainingTokens), true);
   });
 
   it('Deploy Database', async() => {
@@ -92,7 +92,7 @@ contract('Billsplitting', async(accounts) => {
   });
 
   it('Get user owing', async() => {
-    let sumOwing = BigNumber(0);
+    let sumOwing = bn(0);
     for(var i=0; i<payers.length; i++){
       let payerOwing = await billsplitting.getUserOwing(billID,{from: payers[i]});
       console.log('Payer ' + i + ': ' + payerOwing);
@@ -135,10 +135,10 @@ contract('Billsplitting', async(accounts) => {
   });
 
   it('Overpay payer2 share', async() => {
-    let payerBalanceBefore = BigNumber(await web3.eth.getBalance(payer2));
+    let payerBalanceBefore = bn(await web3.eth.getBalance(payer2));
     let payerOwingBefore = await billsplitting.getUserOwing(billID,{from: payer2});
     await billsplitting.payShare(billID, {from: payer2, value: 5*WEI});
-    let payerBalanceAfter = BigNumber(await web3.eth.getBalance(payer2));
+    let payerBalanceAfter = bn(await web3.eth.getBalance(payer2));
     let payerOwingAfter = await billsplitting.getUserOwing(billID,{from: payer2});
     let balanceDiff = payerBalanceBefore.minus(payerBalanceAfter);
     assert.equal(balanceDiff.isLessThan(5*WEI), true);
@@ -157,7 +157,7 @@ contract('Billsplitting', async(accounts) => {
   it('Underpay payer3 share', async() => {
     //Amount owing: 3333333333333333334
     await billsplitting.payShare(billID, {from: payer3, value: 3333333333333333000});
-    let payerOwingAfter = BigNumber(await billsplitting.getUserOwing(billID,{from: payer3}));
+    let payerOwingAfter = bn(await billsplitting.getUserOwing(billID,{from: payer3}));
     console.log(payerOwingAfter);
     assert.equal(payerOwingAfter.isEqualTo(0), false);
   });
@@ -179,29 +179,29 @@ contract('Billsplitting', async(accounts) => {
   });
 
   it('Change user address', async() => {
-    let payer3OwingBefore = BigNumber(await billsplitting.getUserOwing(billID, {from: payer3}));
+    let payer3OwingBefore = bn(await billsplitting.getUserOwing(billID, {from: payer3}));
     await billsplitting.changeUserAddress(billID, payer3New, {from: payer3});
-    let payer3OwingAfter = BigNumber(await billsplitting.getUserOwing(billID, {from: payer3}));
+    let payer3OwingAfter = bn(await billsplitting.getUserOwing(billID, {from: payer3}));
     assert.equal(Number(payer3OwingAfter), 0);
-    let payer3NewOwing = BigNumber(await billsplitting.getUserOwing(billID, {from: payer3New}));
+    let payer3NewOwing = bn(await billsplitting.getUserOwing(billID, {from: payer3New}));
     console.log(payer3OwingBefore);
     console.log(payer3NewOwing);
     assert.equal(payer3NewOwing.isEqualTo(payer3OwingBefore), true);
   });
 
   it('Correct payer3 share', async() => {
-    let payerOwingBefore = BigNumber(await billsplitting.getUserOwing(billID,{from: payer3New}));
+    let payerOwingBefore = bn(await billsplitting.getUserOwing(billID,{from: payer3New}));
     console.log(payerOwingBefore);
     console.log(Number(payerOwingBefore));
     await billsplitting.payShare(billID, {from: payer3New, value: Number(payerOwingBefore)});
-    let payerOwingAfter = BigNumber(await billsplitting.getUserOwing(billID,{from: payer3New}));
+    let payerOwingAfter = bn(await billsplitting.getUserOwing(billID,{from: payer3New}));
     assert.equal(payerOwingAfter.isEqualTo(0), true);
   });
 
   it('Release funds', async() => {
-    let receiverBalanceBefore = BigNumber(await web3.eth.getBalance(receiver));
+    let receiverBalanceBefore = bn(await web3.eth.getBalance(receiver));
     await billsplitting.releaseFunds(billID);
-    let receiverBalanceAfter = BigNumber(await web3.eth.getBalance(receiver));
+    let receiverBalanceAfter = bn(await web3.eth.getBalance(receiver));
     balanceDiff = receiverBalanceAfter.minus(receiverBalanceBefore);
     assert.equal(balanceDiff.isEqualTo(total), true);
   });

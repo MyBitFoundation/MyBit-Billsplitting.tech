@@ -15,7 +15,8 @@ contract Billsplitting {
   MyBitBurner public mybBurner;
   address public owner;
 
-  uint public mybFee = 250;
+  uint private decimals = 10**18;
+  uint public mybFee = uint(250).mul(decimals);
   bool public expired = false;
 
   constructor(address _database, address _mybTokenBurner) public{
