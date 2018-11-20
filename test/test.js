@@ -8,10 +8,10 @@ const ContractManager = artifacts.require('./ContractManager.sol');
 
 const WEI = 1000000000000000000;
 
-const tokenSupply = 100000;
-const tokenPerAccount = 1000;
+const tokenSupply = 100000*WEI;
+const tokenPerAccount = 1000*WEI;
 
-let burnFee = 250;
+let burnFee = 250*WEI;
 
 contract('Billsplitting', async(accounts) => {
   const payer1 = web3.eth.accounts[0];
@@ -48,9 +48,9 @@ contract('Billsplitting', async(accounts) => {
       assert.equal(userBalance, tokenPerAccount);
     }
     // Check token ledger is correct
-    const totalTokensCirculating = (web3.eth.accounts.length - 1) * (tokenPerAccount);
-    const remainingTokens = tokenSupply - totalTokensCirculating;
-    assert.equal(await token.balanceOf(payer1), remainingTokens);
+    const totalTokensCirculating = BigNumber(web3.eth.accounts.length - 1).times(tokenPerAccount);
+    const remainingTokens = BigNumber(tokenSupply).minus(totalTokensCirculating);
+    assert.equal(BigNumber(await token.balanceOf(payer1)).eq(remainingTokens), true);
   });
 
   it('Deploy Database', async() => {
